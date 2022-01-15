@@ -24,7 +24,7 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         applicationId "com.android.example.cameraxbasic"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"

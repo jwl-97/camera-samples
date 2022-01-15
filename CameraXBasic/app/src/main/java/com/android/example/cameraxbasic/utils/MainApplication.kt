@@ -1,4 +1,4 @@
-package com.android.example.cameraxbasic
+package com.android.example.cameraxbasic.utils
 
 import android.app.Application
 import android.util.Log

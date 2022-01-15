@@ -1,66 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright 2020 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     https://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/camera_ui_container"
-    android:layoutDirection="ltr"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr">
 
-    <!-- Camera control and gallery buttons -->
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="0"
+        android:textColor="@color/colorPrimary"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
-        android:id="@+id/camera_switch_button"
-        android:layout_width="@dimen/round_button_medium"
-        android:layout_height="@dimen/round_button_medium"
-        android:layout_marginBottom="@dimen/margin_xlarge"
-        android:layout_marginStart="@dimen/margin_small"
-        android:padding="@dimen/spacing_small"
+        android:id="@+id/btn_flash"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/ic_baseline_flash_off"
         android:scaleType="fitCenter"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_switch"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="@string/switch_camera_button_alt" />
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/camera_capture_button"
+        android:id="@+id/btn_capture"
         android:layout_width="@dimen/round_button_large"
         android:layout_height="@dimen/round_button_large"
         android:layout_marginBottom="@dimen/shutter_button_margin"
-        android:scaleType="fitCenter"
         android:background="@drawable/ic_shutter"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:contentDescription="@string/capture_button_alt"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="@string/capture_button_alt" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
-    <ImageButton
-        android:id="@+id/photo_view_button"
+    <Button
+        android:id="@+id/btn_upload"
         android:layout_width="@dimen/round_button_medium"
         android:layout_height="@dimen/round_button_medium"
+        android:text="업로드"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/btn_view_photo"
+        app:layout_constraintEnd_toEndOf="@id/btn_view_photo" />
+
+    <Button
+        android:id="@+id/btn_view_photo"
+        android:layout_width="@dimen/round_button_medium"
+        android:layout_height="@dimen/round_button_medium"
+        android:layout_marginStart="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_xlarge"
-        android:layout_marginEnd="@dimen/margin_small"
+        android:contentDescription="@string/gallery_button_alt"
         android:padding="@dimen/spacing_large"
         android:scaleType="fitCenter"
-        android:background="@drawable/ic_outer_circle"
-        app:srcCompat="@drawable/ic_photo"
-        app:layout_constraintRight_toRightOf="parent"
+        android:text="사진"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="@string/gallery_button_alt" />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/btn_view_photo_all"
+        android:layout_width="@dimen/round_button_medium"
+        android:layout_height="@dimen/round_button_medium"
+        android:contentDescription="@string/gallery_button_alt"
+        android:padding="@dimen/spacing_large"
+        android:scaleType="fitCenter"
+        android:text="ALL"
+        android:textSize="15dp"
+        android:visibility="invisible"
+        app:layout_constraintRight_toRightOf="@id/btn_view_photo"
+        app:layout_constraintTop_toBottomOf="@id/btn_view_photo" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/view_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/li_image"
+                android:layout_width="200dp"
+                android:layout_height="250dp"
+                android:orientation="vertical" />
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
