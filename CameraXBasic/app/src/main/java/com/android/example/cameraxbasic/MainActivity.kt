@@ -14,11 +14,10 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -41,6 +40,7 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var cameraExecutor: ExecutorService
 
+    private val handler = Handler(Looper.getMainLooper())
     private val displayManager by lazy {
         applicationContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -324,6 +325,56 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val drawable =
                 if (torchState == TorchState.OFF) R.drawable.ic_baseline_flash_off else R.drawable.ic_baseline_flash_on
             cameraUiContainerBinding?.btnFlash?.setBackgroundResource(drawable)
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupZoomAndTapToFocus(camera: Camera) {
+        val listener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val currentZoomRatio: Float = camera.cameraInfo.zoomState.value?.zoomRatio ?: 1F
+                val delta = detector.scaleFactor
+                camera.cameraControl.setZoomRatio(currentZoomRatio * delta)
+                return true
+            }
+        }
+
+        val scaleGestureDetector =
+            ScaleGestureDetector(activityMainBinding.viewFinder.context, listener)
+
+        activityMainBinding.viewFinder.setOnTouchListener { _, event ->
+            scaleGestureDetector.onTouchEvent(event)
+
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                handler.removeCallbacksAndMessages(null)
+
+                val factory = activityMainBinding.viewFinder.meteringPointFactory
+                val point = factory.createPoint(event.x, event.y)
+                val action = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+                    .setAutoCancelDuration(3, TimeUnit.SECONDS)
+                    .build()
+
+                /*
+                * ref
+                * https://groups.google.com/a/android.com/g/camerax-developers/c/h0Q4Al8TXmc
+                *
+                * AF의 기본 설정은 계속해서 초점을 잡는 'CONTROL_AF_MODE_CONTINUOUS_PICTURE'로 되어있고,
+                * startFocusAndMetering() 이 실행되면 위에서 선언한대로
+                * '3초'간 'CONTROL_AF_MODE_AUTO'가 되어 클릭한 부분에 수동으로 초점을 맞출 수 있게된다.
+                * 3초가 지나면 이전 상태인 'CONTROL_AF_MODE_CONTINUOUS_PICTURE'로 다시 돌아간다.
+                */
+                camera.cameraControl.startFocusAndMetering(action)
+                cameraUiContainerBinding?.ivFocusCircle?.apply {
+                    visibility = View.VISIBLE
+                    x = event.x
+                    y = event.y
+                }
+
+                handler.postDelayed({
+                    cameraUiContainerBinding?.ivFocusCircle?.visibility = View.INVISIBLE
+                }, 3000)
+            }
+            return@setOnTouchListener true
         }
     }
 

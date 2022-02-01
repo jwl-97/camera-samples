@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     android:layoutDirection="ltr">
 
+    <ImageView
+        android:id="@+id/iv_focus_circle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_outer_circle"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_count"
         android:layout_width="wrap_content"
